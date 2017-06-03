@@ -2,6 +2,7 @@
 #include <cstdlib>
 
 using namespace std;
+
 typedef struct number_st {
   int num;
   struct number_st *next;

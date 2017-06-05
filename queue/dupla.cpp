@@ -3,6 +3,9 @@
 #include <assert.h>
 #define SIZE 1000
 using namespace std;
+
+// Eduardo Reis Nobre, Gabriel Tranquilli Ueslei Sales
+
 typedef int obj_t;
 typedef struct queue_st {
   int head, tail;
@@ -17,11 +20,52 @@ void status(queue q);
 int peek(queue *q);
 
 int main(int argc, char const *argv[]) {
-  queue q;
-  q.head = q.tail = 1;
-  q.full = false;
-  q.empty = true;
-  obj_t o;
+  int N, i = 0, value;
+  char ctrl;
+  queue q1;
+  queue q2;
+  queue q3;
+  q1.head = q1.tail = 1;
+  q1.full = false;
+  q1.empty = true;
+
+  q2.head = q2.tail = 1;
+  q2.full = false;
+  q2.empty = true;
+
+  q3.head = q3.tail = 1;
+  q3.full = false;
+  q3.empty = true;
+
+  std::cin >> N;
+  while (N != 0) {
+    for (i = 0; i < N ; i++) {
+      std::cin >> ctrl;
+      if (ctrl == 'E') {
+        std::cin >> value;
+        if (value < 5000) {
+          enqueue(&q1 , value);
+        } else {
+          enqueue(&q2 , value);
+        }
+      } else {
+        if (!isEmpty(q1)) {
+          dequeue(&q1);
+        } else {
+          dequeue(&q2);
+        }
+      }
+    }
+    while (!isEmpty(q1)) {
+      std::cout << dequeue(&q1) << ' ';
+    }
+    std::cout << '\n';
+    while (!isEmpty(q2)) {
+      std::cout << dequeue(&q2);
+    }
+    std::cout << '\n';
+    std::cin >> N;
+  }
   return 0;
 }
 
@@ -51,7 +95,6 @@ bool isEmpty(queue q) {
 
 void status(queue q) {
   int i = 0;
-  std::cout << q.head << ": ";
   i = q.head - 1;
   if (!isEmpty(q)) {
     do {
@@ -59,6 +102,8 @@ void status(queue q) {
       i++;
       if (i == SIZE) i = 0;
     } while(i != q.tail - 1);
+  } else {
+    std::cout << "*";
   }
-  std::cout << " :" << q.tail << '\n';
+  std::cout << '\n';
 }

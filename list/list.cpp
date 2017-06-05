@@ -12,7 +12,6 @@ typedef struct number_st {
 
 void addItem (number **list, obj_t x);
 void insertSort (number **list, obj_t x);
-obj_t last (number ***p);
 
 int main(int argc, char const *argv[]) {
   number *list, *p;
@@ -28,9 +27,6 @@ int main(int argc, char const *argv[]) {
   return 0;
 }
 
-obj_t last(number ***p) {
-
-}
 void insertSort (number **p, obj_t x) {
   if ((*p) == 0) { // lista vazia
     (*p) = (number *) malloc(sizeof(number));
@@ -80,8 +76,8 @@ void addItem (number **p, obj_t x) {
     (*p) = node;
 
     // traz p sempre pro começo da lista
-    while ((*p)->before != 0) {
-      (*p) = (*p)->before;
-    }
+  }
+  while ((*p)->before != 0) {
+    (*p) = (*p)->before;
   }
 }

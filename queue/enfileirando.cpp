@@ -3,6 +3,9 @@
 #include <assert.h>
 #define SIZE 1000
 using namespace std;
+
+// Eduardo Reis Nobre, Gabriel Tranquilli Ueslei Sales
+
 typedef int obj_t;
 typedef struct queue_st {
   int head, tail;
@@ -17,11 +20,29 @@ void status(queue q);
 int peek(queue *q);
 
 int main(int argc, char const *argv[]) {
+  int N, i = 0, value;
+  char ctrl;
   queue q;
   q.head = q.tail = 1;
   q.full = false;
   q.empty = true;
-  obj_t o;
+  std::cin >> N;
+  while (N != 0) {
+    for (i = 0; i < N ; i++) {
+      std::cin >> ctrl;
+      if (ctrl == 'E') {
+        std::cin >> value;
+        enqueue(&q, value);
+        status(q);
+      } else {
+        dequeue(&q);
+        status(q);
+      }
+    }
+    while (!isEmpty(q)) dequeue(&q);
+    std::cout << '\n';
+    std::cin >> N;
+  }
   return 0;
 }
 
@@ -51,7 +72,6 @@ bool isEmpty(queue q) {
 
 void status(queue q) {
   int i = 0;
-  std::cout << q.head << ": ";
   i = q.head - 1;
   if (!isEmpty(q)) {
     do {
@@ -59,6 +79,8 @@ void status(queue q) {
       i++;
       if (i == SIZE) i = 0;
     } while(i != q.tail - 1);
+  } else {
+    std::cout << "*";
   }
-  std::cout << " :" << q.tail << '\n';
+  std::cout << '\n';
 }

@@ -36,7 +36,7 @@ int main(int argc, char const *argv[]) {
   while (N != 0) {
     number * p;
     queue q;
-    p = q.itens = 0;
+    p = q.itens = NULL;
     q.head = q.tail = 1;
     q.full = false;
     q.empty = true;

@@ -1,84 +1,149 @@
 #include <iostream>
 #include <cstdlib>
+#include <assert.h>
 
 using namespace std;
 
 typedef int obj_t;
 
-typedef struct element_st {
-  obj_t num;
-  struct element_st *after, *before;
-} element;
+typedef struct tree_st {
+  obj_t info;
+  struct tree_st *leftChild, *rightChild;
+  struct tree_st *father;
+} tree;
 
-void addItem (element **list, obj_t x);
-void insertSort (element **list, obj_t x);
+void init(tree *a, obj_t info);
+obj_t info(tree *a);
+int height(tree *a);
+int depth(tree *a);
+tree *father(tree *a);
+tree *leftChild(tree *a);
+tree *rightChild(tree *a);
+void insertRightChild(tree *a, tree *c);
+void insertLeftChild(tree *a, tree *c);
+void removeRightChild(tree *a);
+void removeLeftChild(tree *a);
+
+void preOrder(tree *a);
+void posOrder(tree *a);
+void order(tree *a);
 
 int main(int argc, char const *argv[]) {
-  element *list, *p;
-  p = list = NULL;
-  insertSort(&p, 10);
-  insertSort(&p, 1);
-  insertSort(&p, 4);
-  insertSort(&p, -4);
-  while (p != 0) {
-    std::cout << p->num << '\n';
-    p = p->after;
-  }
+
   return 0;
 }
+//  Funcs
+void init(tree *a, obj_t info) {
+  a->info = info;
+  a->father = NULL;
+  a->leftChild = NULL;
+  a->rightChild = NULL;
+}
 
-void insertSort (element **p, obj_t x) {
-  if ((*p) == NULL) { // lista vazia
-    (*p) = (element *) malloc(sizeof(element));
-    (*p)->before = (*p)->after = NULL;
-    (*p)->num = x;
-  } else { // lista contem itens
-    element *node = (element *) malloc(sizeof(element));
-    node->num = x;
-    if ((*p)->num >= x) { // insere depois
-      while (((*p)->num >= x) && (*p)->after != NULL) {
-        (*p) = (*p)->after;
-      }
-      if ((*p)->after == NULL && (*p)->num >= x) { // estou na ultima posição possível
-        node->before = (*p);
-        node->after = (*p)->after;
-        (*p)->after = node;
-      } else { // inserindo no meio
-        node->after = (*p);
-        node->before = (*p)->before;
-        (*p)->before->after = node;
-        (*p)->before = node;
-      }
-    }
-    else { // insere antes
-      node->after = (*p);
-      node->before = NULL;
-      (*p)->before = node;
-      (*p) = node;
-    }
+obj_t info(tree *a) {
+  if (a != NULL) {
+    return a->info;
   }
-  // traz p sempre pro começo da lista
-  while ((*p)->before != 0) {
-    (*p) = (*p)->before;
+  return false;
+}
+
+int height(tree *a) {
+  int retHeight = -1, leftHeight, rightHeight;
+  if (a != NULL) {
+    leftHeight = height(leftChild(a)) + 1;
+    rightHeight = height(rightChild(a)) + 1;
+    retHeight = (leftHeight < rightHeight) ? leftHeight : rightHeight;
+  }
+  return retHeight;
+}
+
+int depth(tree *a) {
+  int d = 0;
+  assert(a != NULL);
+  if (a->father != NULL) d = depth(a->father) + 1;
+  return d;
+}
+
+tree *father(tree *a) {
+  return a->father;
+}
+
+tree *leftChild(tree *a){
+  tree *child = NULL;
+  if (a != NULL) {
+    child = a->leftChild;
+  }
+  return child;
+}
+
+tree *rightChild(tree *a){
+  tree *child = NULL;
+  if (a != NULL) {
+    child = a->rightChild;
+  }
+  return child;
+}
+
+void insertLeftChild(tree *a, tree *c){
+  assert(a != NULL && c != NULL);
+  c->father = a;
+  a->leftChild = c;
+}
+
+void insertRightChild(tree *a, tree *c){
+  assert(a != NULL && c != NULL);
+  c->father = a;
+  a->rightChild = c;
+}
+
+void removeLeftChild(tree *a){
+  tree *child = NULL;
+  if (a != NULL) {
+    child = a->leftChild;
+    a->leftChild = NULL;
+    if (child != NULL){
+      removeLeftChild(child);
+      removeRightChild(child);
+    }
+    free(child);
+  }
+  return;
+}
+
+void removeRightChild(tree *a){
+  tree *child = NULL;
+  if (a != NULL) {
+    child = a->rightChild;
+    a->rightChild = NULL;
+    if (child != NULL){
+      removeLeftChild(child);
+      removeRightChild(child);
+    }
+    free(child);
+  }
+  return;
+}
+
+void preOrder(tree *a){
+  if (a != NULL) {
+    info(a);
+    preOrder(leftChild(a));
+    preOrder(rightChild(a));
   }
 }
 
-void addItem (element **p, obj_t x) {
-  if ((*p) == 0) { // lista vazia
-    (*p) = (element *) malloc(sizeof(element));
-    (*p)->before = (*p)->after = 0;
-    (*p)->num = x;
-  } else { // lista contem itens
-    element *node = (element *) malloc(sizeof(element));
-    node->after = 0;
-    node->before = (*p);
-    node->num = x;
-    (*p)->after = node;
-    (*p) = node;
-
-    // traz p sempre pro começo da lista
+void posOrder(tree *a){
+  if (a != NULL) {
+    posOrder(leftChild(a));
+    posOrder(rightChild(a));
+    info(a);
   }
-  while ((*p)->before != 0) {
-    (*p) = (*p)->before;
+}
+
+void order(tree *a){
+  if (a != NULL) {
+    order(leftChild(a));
+    info(a);
+    order(rightChild(a));
   }
 }

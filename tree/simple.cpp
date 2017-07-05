@@ -29,28 +29,35 @@ void remove(tree *a, int i);
 
 int main(int argc, char const *argv[]) {
 
-  tree * d, * c;
+  tree * d, * c, * f;
   d = (tree *) malloc(sizeof(tree));
   c = (tree *) malloc(sizeof(tree));
+  f = (tree *) malloc(sizeof(tree));
   init(d, 2);
   init(c, 3);
+  init(f, 4);
   insert(d,c);
-  std::cout << info(d) << '\n';
+  insert(d, f);
+  insert(d, f);
+  std::cout << info(child(d, 2)) << '\n';
+
   return 0;
 }
 //  Funcs
+
 int depth(tree *a) {
   int p = 0;
+  std::cout << a->father << '\n';
   if (a->father != NULL) p = depth(a->father) + 1;
   return p;
 }
 
 int children(tree *a) {
   int k = 0;
-  element * f = a->offspring;
+  element * f = a->offspring; // f se torna os filhos de a
   while (f != NULL) {
     f = f->next;
-    k++;
+    k++; // anda até o final da arvore contando os filhos
   }
   return k;
 }
@@ -103,6 +110,7 @@ tree * child(tree *a, int  i) {
   }
   return f->child;
 }
+
 tree * father(tree *a) {
   return a->father;
 }

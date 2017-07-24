@@ -29,7 +29,7 @@ void posOrder(tree *a);
 void order(tree *a);
 
 int main(int argc, char const *argv[]) {
-
+  
   return 0;
 }
 //  Funcs

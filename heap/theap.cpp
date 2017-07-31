@@ -3,7 +3,7 @@
 using namespace std;
 
 #include <assert.h>
-#define SIZE 1000
+#define SIZE 10
 
 // Eduardo Reis Nobre && Gabriel Tranquilli
 
@@ -19,7 +19,6 @@ bool empty(heap p);
 obj_t dequeue(heap *p);
 obj_t next(heap *p);
 
-void max_heapfy(heap *p, int n, int i);
 void status(heap h);
 
 int main(int argc, char const *argv[]) {
@@ -49,36 +48,13 @@ int main(int argc, char const *argv[]) {
   return 0;
 }
 
-void max_heapfy(heap *p, int n, int i) {
-  int left = 2 * i;
-  int right = 2 * i + 1;
-  int max;
-  obj_t aux;
-
-  if (left <= n && (p->items[left] > p->items[right])) {
-    max = left;
-  } else {
-    max = i;
-  }
-  if (right <= n && (p->items[right] < p->items[max])) {
-    max = right;
-  }
-  if (max != i) {
-    aux = p->items[i];
-    p->items[i] = p->items[max];
-    p->items[max] = aux;
-    // max_heapfy(&p, n, max_heapfy)
-  }
-
-}
-
 bool enqueue (heap *p, obj_t obj) {
   int i;
   obj_t aux;
   if (p->end != SIZE) {
     p->items[p->end++] = obj;
     i = p->end;
-    while ((i > 1) && (p->items[i - 1] > p->items[i / 2 - 1])) {
+    while ((i > 1) && (p->items[i - 1] > p->items[i/2 - 1])) {
       aux = p->items[i - 1];
       p->items[i - 1] = p->items[i / 2 - 1];
       p->items[i / 2 - 1] = aux;
@@ -97,8 +73,8 @@ obj_t dequeue(heap *p) {
   o = p->items[0]; // elemento que sai
   p->items[0] = p->items[--p->end];  // ultimo vai para o começo da fila
   while(!stop) {         // max-heapfy
-    if(((2 * i) <= p->end) && (p->items[i-1] < p->items[2*i-1])) max = 2*i;
-    if(((2*i+1) <= p->end) && (p->items[max - i] < p->items[2 * i])) max = 2 * i + 1;
+    if(((2*i) <= p->end) && (p->items[i-1] < p->items[2*i-1])) max = 2*i;
+    if(((2*i+1) <= p->end) && (p->items[max-i] < p->items[2*i])) max = 2*i+1;
     if(i != max) {
       aux = p->items[i-1];
       p->items[i-1] = p->items[max-1];

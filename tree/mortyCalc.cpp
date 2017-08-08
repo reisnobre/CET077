@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <assert.h>
 #include <string>
+
 using namespace std;
 
 typedef int obj_t;
@@ -28,13 +29,28 @@ void preOrder(tree *a);
 void posOrder(tree *a);
 void order(tree *a);
 
+bool isOperator(char a);
+
 int main(int argc, char const *argv[]) {
   int i;
   string expr;
+  tree *main, *auxLeft, *auxRight;
+
+  main = auxLeft = auxRight = (tree *) malloc(sizeof(tree));
   getline(cin, expr);
   for (i = 0 ; i < expr.length() ; i++) {
-    if (expr[i] )
+    if (isOperator(expr[i]) == true) {
+      init(main, expr[i]);
+    } else {
+      init(auxLeft, expr[i - 1]);
+      init(auxRight, expr[i + 1]);
+      insertLeftChild(main, auxLeft);
+      insertRightChild(main, auxRight);
+    }
   }
+  
+  order(main);
+
   return 0;
 }
 

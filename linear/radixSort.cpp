@@ -1,34 +1,6 @@
 #include<iostream>
 using namespace std;
 
-// Eduardo Reis Nobre && Ueslei Sales
-
-int getMax(int *arr, int n);
-void countSort(int *arr, int n, int exp);
-void radixsort(int arr[], int n);
-void print(int arr[], int n);
-
-int main(int argc, char const *argv[]) {
-	// int arr[] = {17, 315, 48};
-	// int n = sizeof(arr)/sizeof(arr[0]);
-
-	// // print(arr, n);
-	// std::cout << '\n';
-  int N, i, num, sizeB;
-  while (std::cin >> sizeB) {
-		std::cin >> N;
-    int arr[N];
-    for (i = 0; i < N; i++) {
-      std::cin >> num;
-      arr[i] = num;
-    }
-		// print(arr, N);
-    radixsort(arr, N);
-    std::cout << '\n';
-  }
-  return 0;
-}
-
 int getMax(int *arr, int n) {
 	int mx = arr[0];
 	for (int i = 1; i < n; i++)
@@ -70,9 +42,20 @@ void radixsort(int arr[], int n) {
 	// Do counting sort for every digit. Note that instead
 	// of passing digit number, exp is passed. exp is 10^i
 	// where i is current digit number
-	for (int exp = 1; m/exp > 0; exp *= 10) {
-		countSort(arr, n, exp);
-		for (int i = 0; i < n; i++) std::cout << arr[i] << ' ';
-		std::cout << '\n';
-	}
+	for (int exp = 1; m/exp > 0; exp *= 10) countSort(arr, n, exp);
+}
+
+// A utility function to print an array
+void print(int arr[], int n) {
+	for (int i = 0; i < n; i++) cout << arr[i] << " ";
+}
+
+// Driver program to test above functions
+int main() {
+	int arr[] = {170, 45, 75, 90, 802, 24, 2, 66};
+	int n = sizeof(arr)/sizeof(arr[0]);
+	radixsort(arr, n);
+	print(arr, n);
+	std::cout << '\n';
+	return 0;
 }

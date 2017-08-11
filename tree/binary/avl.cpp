@@ -7,315 +7,184 @@ using namespace std;
 typedef int obj_t;
 
 typedef struct tree_st {
-  obj_t info;
+  obj_t val;
+  int height;
   struct tree_st *leftChild, *rightChild;
   struct tree_st *father;
 } tree;
 
-void init(tree *a, obj_t info);
-obj_t info(tree *a);
-int height(tree *a);
-int depth(tree *a);
-tree *father(tree *a);
-tree *leftChild(tree *a);
-tree *rightChild(tree *a);
-void insertRightChild(tree *a, tree *c);
-void insertLeftChild(tree *a, tree *c);
-void removeRightChild(tree *a);
-void removeLeftChild(tree *a);
-void bstInsert(tree *a, tree *c);
-
-bool removeByValue(tree *a, obj_t value);
-bool isEmpty(tree *a);
+// core
+tree  *newTree (obj_t val);
+tree *bstInsert(tree *t, obj_t val);
+void insertRightChild(tree *f, tree *c);
+void insertLeftChild(tree *f, tree *c);
+void removeRightChild(tree *f);
+void removeLeftChild(tree *f);
 void destroy(tree *a);
 
-int factor(tree *a);
-bool isBalanced(tree *a);
-void balance(tree *a);
-
-void rightRotation(tree *a);
-void leftRotation(tree *a);
-
+// balancing
+tree *rightRotation(tree *y);
+tree *leftRotation(tree *x);
 void leftRightRotation(tree *a);
 void rightLeftRotation(tree *a);
+// misc
 
-void preOrder(tree *a);
-void posOrder(tree *a);
-void order(tree *a);
+int max(int a, int b);
+int getFactor(tree *t);
+void preOrder(tree *t);
+int height(tree *t);
 
 int main(int argc, char const *argv[]) {
   tree *root, *aux;
   int N;
   obj_t element;
   root = aux = NULL;
+  /* Constructing tree given in the above figure */
+  root = bstInsert(root, 10);
+  root = bstInsert(root, 20);
+  root = bstInsert(root, 30);
+  root = bstInsert(root, 40);
+  root = bstInsert(root, 50);
+  root = bstInsert(root, 25);
 
-  std::cin >> N;
-  while (N != 0) {
-    for (int i = 0; i < N; i++) {
-      std::cin >> element;
-      if (root == NULL) {
-        root = (tree *) malloc(sizeof(tree));
-        init(root, element);
-      } else {
-        aux = (tree *)malloc(sizeof(tree));
-        init(aux, element);
-        bstInsert(root, aux);
-      }
-    }
-    if (isBalanced(root)) std::cout << "balanced" << '\n';
-    else std::cout << "not balanced" << '\n';
-    root = NULL;
-    std::cin >> N;
-    std::cout << '\n';
-  }
+  /* The constructed AVL Tree would be
+  			30
+  		/ \
+  		20 40
+  		/ \	 \
+  	10 25 50
+  */
+  preOrder(root);
+  std::cout << '\n';
   return 0;
 }
-//  Funcs
-void init(tree *a, obj_t info) {
-  a->info = info;
-  a->father = NULL;
-  a->leftChild = NULL;
-  a->rightChild = NULL;
+
+tree  *newTree (obj_t val) {
+  tree *t;
+  t = (tree *) malloc(sizeof(tree));
+  t->val = val;
+  t->father = t->leftChild = t->rightChild = NULL;
+  t->height = 1;
+  return t;
 }
 
-void bstInsert(tree *a, tree *c) {
-  bool bal;
-  if (info(c) < info(a)) {
-    if(leftChild(a) == NULL) {
-      insertLeftChild(a, c);
-    } else {
-      bstInsert(leftChild(a), c);
-    }
-  } else {
-    if(rightChild(a) == NULL) {
-      insertRightChild(a, c);
-    } else {
-      bstInsert(rightChild(a), c);
-    }
+void insertRightChild(tree *f, tree *c) {
+
+}
+void insertLeftChild(tree *f, tree *c) {
+
+}
+void removeRightChild(tree *f) {
+
+}
+void removeLeftChild(tree *f) {
+
+}
+
+tree *bstInsert(tree *t, obj_t val) {
+  /* 1. Perform the normal BST insertion */
+  if (t == NULL) return(newTree(val));
+  if (val < t->val) t->leftChild = bstInsert(t->leftChild, val);
+  else if (val > t->val) t->rightChild = bstInsert(t->rightChild, val);
+  else return t; // Equal keys are not allowed in BST
+
+
+  /* 2. Update height of this ancestor node */
+  t->height = 1 + max(height(t->leftChild), height(t->rightChild));
+
+  /* 3. Get the balance factor of this ancestor
+    node to check whether this node became
+    unbalanced */
+  int factor = getFactor(t);
+
+  // If this node becomes unbalanced, then
+  // there are 4 cases
+
+
+  // Pure rotations
+  // Left Left Case
+  if (factor > 1 && val < t->leftChild->val) return rightRotation(t);
+
+  // Right Right Case
+  if (factor < -1 && val > t->rightChild->val) return leftRotation(t);
+
+  // Mixed rotations
+
+  // Left Right Case
+  if (factor > 1 && val > t->leftChild->val) {
+    t->leftChild = leftRotation(t->leftChild);
+    return rightRotation(t);
   }
-  if (!isBalanced(a)) balance(a);
-}
 
-void balance(tree *a) {
-  int f;
-  if (!isEmpty(a)) {
-    while (!isBalanced(a)) {
-      balance(leftChild(a));
-      balance(rightChild(a));
-      f = factor(a);
-      if (f > 1) {
-        if (factor(leftChild(a)) < 0) {
-          leftRightRotation(a);
-        } else {
-          rightRotation(a);
-        }
-      } else if (f < -1) {
-        if (factor(rightChild(a)) > 0) {
-          rightLeftRotation(a);
-        } else {
-          leftRotation(a);
-        }
-      }
-    }
+  // Right Left Case
+  if (factor < -1 && val < t->rightChild->val)
+  {
+    t->rightChild = rightRotation(t->rightChild);
+    return leftRotation(t);
   }
-}
 
-void leftRightRotation(tree *a) {
-  leftRotation(leftChild(a));
-  rightRotation(a);
+  /* return the (unchanged) node pointer */
+  return t;
 }
-void rightLeftRotation(tree *a) {
-  rightRotation(rightChild(a));
-  rightRotation(a);
-}
-
-int factor(tree *a) {
-  int lh = height(leftChild(a));
-  int rh = height(rightChild(a));
-  return lh - rh;
-}
-
-bool isBalanced(tree *a) {
-  if (a == NULL) return true;
-  if ((abs(factor(a)) <= 1) && isBalanced(leftChild(a)) && isBalanced(rightChild(a))) return true;
-  return false;
-}
-
 void destroy(tree *a) {
-  if (a == NULL) return;
-  destroy(leftChild(a));
-  a->leftChild = NULL;
-  destroy(rightChild(a));
-  a->rightChild = NULL;
-  free(a);
+
 }
 
-void rightRotation(tree *a) {
-  tree *p;
-  p = (tree *) malloc(sizeof(tree));
-  p = leftChild(a);
-  leftChild(p);
-  insertLeftChild(a, leftChild(p));
-  insertRightChild(p, a);
-  a = p;
-}
-void leftRotation(tree *a) {
-  tree *p;
-  p = (tree *) malloc(sizeof(tree));
-  p = rightChild(a);
-  leftChild(p);
-  insertRightChild(a, leftChild(p));
-  insertLeftChild(p, a);
-  a = p;
-}
+// balancing
 
-bool isEmpty(tree *a) {
-  if (a == NULL) return true;
-  return false;
+tree *rightRotation(tree *y) {
+	tree *x = y->leftChild;
+	tree *T2 = x->rightChild;
+
+	// Perform rotation
+	x->rightChild = y;
+	y->leftChild = T2;
+
+	// Update heights
+	y->height = max(height(y->leftChild), height(y->rightChild))+1;
+	x->height = max(height(x->leftChild), height(x->rightChild))+1;
+
+	// Return new root
+	return x;
 }
 
-bool removeByValue(tree *a, obj_t value) {
-  tree *lc, *rc, *p;
-  if (!isEmpty(a)) {
-    if(value == info(a)) {
-      lc = leftChild(a);
-      rc = rightChild(a);
-      p = a;
-      if (isEmpty(lc) && isEmpty(rc)) {
-        a = NULL;
-      }
-      else {
-        if (isEmpty(lc)) {
-          a = lc;
-        }
-        if (isEmpty(rc)) {
-          a = rc;
-        }
-      }
-      if (!isEmpty(lc) && !isEmpty(rc)) {
-        while (!isEmpty(leftChild(lc))) lc = leftChild(lc);
-        a->info = info(lc);
-        p = lc;
-        lc = leftChild(lc);
-      }
-      free(p);
-      return true;
-    } else {
+tree *leftRotation(tree *x) {
+  tree *y = x->rightChild;
+	tree *T2 = y->leftChild;
 
-    }
-  }
+	// Perform rotation
+	y->leftChild = x;
+	x->rightChild = T2;
+
+	// Update heights
+	x->height = max(height(x->leftChild), height(x->rightChild))+1;
+	y->height = max(height(y->leftChild), height(y->rightChild))+1;
+
+	// Return new root
+	return y;
 }
 
-obj_t info(tree *a) {
-  if (a != NULL) {
-    return a->info;
-  }
-  return false;
+// misc
+int max(int a, int b) {
+  return (a > b) ? a : b;
 }
 
-int height(tree *a) {
-  int leftHeight, rightHeight;
-  if (a == NULL) {
-    return 0;
-  } else {
-    leftHeight = height(leftChild(a)) + 1;
-    rightHeight = height(rightChild(a)) + 1;
-    if (leftHeight > rightHeight) {
-      return leftHeight;
-    } else {
-      return rightHeight;
-    }
-  }
+int getFactor(tree *t) {
+  if (t == NULL)
+		return 0;
+	return height(t->leftChild) - height(t->rightChild);
 }
 
-int depth(tree *a) {
-  int d = 0;
-  assert(a != NULL);
-  if (a->father != NULL) d = depth(a->father) + 1;
-  return d;
+void preOrder(tree *t) {
+	if(t != NULL) {
+    std::cout << t->val << ' ';
+		preOrder(t->leftChild);
+		preOrder(t->rightChild);
+	}
 }
 
-tree *father(tree *a) {
-  return a->father;
-}
-
-tree *leftChild(tree *a){
-  tree *child = NULL;
-  if (a != NULL) {
-    child = a->leftChild;
-  }
-  return child;
-}
-
-tree *rightChild(tree *a){
-  tree *child = NULL;
-  if (a != NULL) {
-    child = a->rightChild;
-  }
-  return child;
-}
-
-void insertLeftChild(tree *a, tree *c){
-  assert(a != NULL && c != NULL);
-  c->father = a;
-  a->leftChild = c;
-}
-
-void insertRightChild(tree *a, tree *c){
-  std::cout << a << " pai  filho " << c << '\n';
-  assert(a != NULL && c != NULL);
-  c->father = a;
-  a->rightChild = c;
-}
-
-void removeLeftChild(tree *a){
-  tree *child = NULL;
-  if (a != NULL) {
-    child = a->leftChild;
-    a->leftChild = NULL;
-    if (child != NULL){
-      removeLeftChild(child);
-      removeRightChild(child);
-    }
-    free(child);
-  }
-  return;
-}
-
-void removeRightChild(tree *a){
-  tree *child = NULL;
-  if (a != NULL) {
-    child = a->rightChild;
-    a->rightChild = NULL;
-    if (child != NULL){
-      removeLeftChild(child);
-      removeRightChild(child);
-    }
-    free(child);
-  }
-  return;
-}
-
-void preOrder(tree *a){
-  if (a != NULL) {
-    std::cout << info(a) << '\n';
-    preOrder(leftChild(a));
-    preOrder(rightChild(a));
-  }
-}
-
-void posOrder(tree *a){
-  if (a != NULL) {
-    posOrder(leftChild(a));
-    posOrder(rightChild(a));
-    std::cout << info(a) << '\n';
-  }
-}
-
-void order(tree *a){
-  if (a != NULL) {
-    order(leftChild(a));
-    std::cout << info(a) << '\n';
-    order(rightChild(a));
-  }
+int height(tree *t) {
+	if (t == NULL)
+		return 0;
+	return t->height;
 }

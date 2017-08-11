@@ -69,7 +69,6 @@ void max_heapfy(heap *p, int n, int i) {
     p->items[max] = aux;
     // max_heapfy(&p, n, max_heapfy)
   }
-
 }
 
 bool enqueue (heap *p, obj_t obj) {
@@ -98,7 +97,7 @@ obj_t dequeue(heap *p) {
   p->items[0] = p->items[--p->end];  // ultimo vai para o começo da fila
   while(!stop) {         // max-heapfy
     if(((2 * i) <= p->end) && (p->items[i-1] < p->items[2*i-1])) max = 2*i;
-    if(((2*i+1) <= p->end) && (p->items[max - i] < p->items[2 * i])) max = 2 * i + 1;
+    if(((2*i+1) <= p->end) && (p->items[max - 1] < p->items[2 * i])) max = 2 * i + 1;
     if(i != max) {
       aux = p->items[i-1];
       p->items[i-1] = p->items[max-1];

@@ -1,110 +1,51 @@
 #include <iostream>
-#include <cstdlib>
 using namespace std;
 
-#include <assert.h>
-#define SIZE 10
-
-typedef int obj_t;
-
-typedef struct heap_st {
-  obj_t items[SIZE];
-  int end;
-} heap;
-
-bool enqueue(heap *p, obj_t obj);
-bool empty(heap p);
-obj_t dequeue(heap *p);
-obj_t next(heap *p);
-
-void status(heap h);
+// To heapify a subtree rooted with node i which is
+// an index in arr[]. n is size of heap
+void heapify(int *arr, int n, int i);
+void heapSort(int arr[], int n);
 
 int main(int argc, char const *argv[]) {
-  heap h;
-  h.end = 0;
-  obj_t o;
+	int arr[] = {12, 11, 13, 5, 6, 7};
+	int n = sizeof(arr)/sizeof(arr[0]);
 
-  enqueue(&h,3);
-  status(h);
-  enqueue(&h,7);
-  status(h);
-  enqueue(&h,2);
-  status(h);
-  enqueue(&h,9);
-  status(h);
-  enqueue(&h,1);
-  status(h);
-  enqueue(&h,4);
-  status(h);
-  o = dequeue(&h);
-  status(h);
-  enqueue(&h,8); status(h);
-  o = dequeue(&h);
-  status(h);
-  o = dequeue(&h);
-  status(h);
-  enqueue(&h,5); status(h);
-  o = dequeue(&h);
-  status(h);
-  o = dequeue(&h);
-  status(h);
-  while(!empty(h)) dequeue(&h); status(h);
-  return 0;
+	heapSort(arr, n);
+	for (int i = 0; i < n; i++) std::cout << arr[i] << ' ';
+	std::cout << '\n';
+	return 0;
 }
 
-bool enqueue (heap *p, obj_t obj) {
-  int i;
-  obj_t aux;
-  if (p->end != SIZE) {
-    p->items[p->end++] = obj;
-    i = p->end;
-    while ((i > 1) && (p->items[i - 1] > p->items[i/2 - 1])) {
-      aux = p->items[i - 1];
-      p->items[i - 1] = p->items[i/2 - 1];
-      p->items[i/2 - 1] = aux;
-      i = i/2;
-    }
-    return true;
+
+void heapify(int *arr, int n, int i) {
+	int largest = i; // Initialize largest as root
+	int l = 2*i + 1; // left = 2*i + 1
+	int r = 2*i + 2; // right = 2*i + 2
+  // If left child is larger than root
+  if (l < n && arr[l] > arr[largest]) largest = l;
+  // If right child is larger than largest so far
+  if (r < n && arr[r] > arr[largest]) largest = r;
+  // If largest is not root
+  if (largest != i) {
+    swap(arr[i], arr[largest]);
+    // Recursively heapify the affected sub-tree
+    heapify(arr, n, largest);
   }
-  return false;
 }
 
-obj_t dequeue(heap *p) {
-  int i = 1, max = 1;
-  obj_t o, aux;
-  bool stop = false;
-  assert(p->end != 0);
-  o = p->items[0]; // elemento que sai
-  p->items[0] = p->items[--p->end];  // ultimo vai para o começo da fila
-  while(!stop) {         // max-heapfy
-    if(((2*i) <= p->end) && (p->items[i-1] < p->items[2*i-1])) max = 2*i;
-    if(((2*i+1) <= p->end) && (p->items[max-1] < p->items[2*i])) max = 2*i+1;
-    if(i != max) {
-      aux = p->items[i-1];
-      p->items[i-1] = p->items[max-1];
-      p->items[max-1] = aux;
-      i = max;
-    } else stop = true;
+// main function to do heap sort
+void heapSort(int arr[], int n) {
+	// Build heap (rearrange array)
+	for (int i = n / 2 - 1; i >= 0; i--) {
+    std::cout << i << '\n';
+    heapify(arr, n, i);
   }
-  return o;
-}
 
-obj_t next(heap *p) {
-  return p->items[0];
-}
-
-bool empty(heap p) {
-  return (p.end == 0);
-}
-
-void status(heap h) {
-  int i = 0;
-  if(!empty(h)) {
-    do {
-      std::cout << h.items[i] << ' ';
-      i++;
-    } while(i != h.end);
-  }
-  std::cout << ": " << h.end << '\n';
-  return;
+	// One by one extract an element from heap
+	for (int i=n-1; i>=0; i--) {
+		// Move current root to end
+		swap(arr[0], arr[i]);
+		// call max heapify on the reduced heap
+		heapify(arr, i, 0);
+	}
 }

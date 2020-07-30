@@ -40,11 +40,13 @@ int main(int argc, char const *argv[]) {
   obj_t element;
   root = aux = NULL;
   /* Constructing tree given in the above figure */
+  root = bstInsert(root, 15);
   root = bstInsert(root, 10);
-  root = bstInsert(root, 20);
-  root = bstInsert(root, 30);
-  root = bstInsert(root, 40);
-  root = bstInsert(root, 50);
+  root = bstInsert(root, 7);
+  root = bstInsert(root, 22);
+  root = bstInsert(root, 13);
+  root = bstInsert(root, 11);
+  root = bstInsert(root, 12);
   root = bstInsert(root, 25);
 
   /* The constructed AVL Tree would be
@@ -96,29 +98,35 @@ tree *bstInsert(tree *t, obj_t val) {
     node to check whether this node became
     unbalanced */
   int factor = getFactor(t);
-
   // If this node becomes unbalanced, then
   // there are 4 cases
 
 
   // Pure rotations
   // Left Left Case
-  if (factor > 1 && val < t->leftChild->val) return rightRotation(t);
+  if (factor > 1 && val < t->leftChild->val) {
+    std::cout << "Rotação a direita" << val << '\n';
+    return rightRotation(t);
+  }
 
   // Right Right Case
-  if (factor < -1 && val > t->rightChild->val) return leftRotation(t);
+  if (factor < -1 && val > t->rightChild->val) {
+    std::cout << "Rotação a esquerda" << val << '\n';
+    return leftRotation(t);
+  }
 
   // Mixed rotations
 
   // Left Right Case
   if (factor > 1 && val > t->leftChild->val) {
+    std::cout << "Rotação Esquerda Direta" << val << '\n';
     t->leftChild = leftRotation(t->leftChild);
     return rightRotation(t);
   }
 
   // Right Left Case
-  if (factor < -1 && val < t->rightChild->val)
-  {
+  if (factor < -1 && val < t->rightChild->val) {
+    std::cout << "Rotação Direta Esquerda" << t->rightChild->val << '\n';
     t->rightChild = rightRotation(t->rightChild);
     return leftRotation(t);
   }
